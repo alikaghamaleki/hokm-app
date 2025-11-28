@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>بازی‌های ایرانی</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    body {font-family:Tahoma;background:#0a3d62;color:white;text-align:center;padding:20px;margin:0;}
+    button {padding:20px;margin:15px;font-size:22px;background:#1e90ff;color:white;border:none;border-radius:15px;width:90%;cursor:pointer;}
+    h1 {font-size:30px;}
+  </style>
+</head>
+<body>
+  <h1>سلام <span id="name"></span> 👋</h1>
+  <h2>یه بازی انتخاب کن</h2>
+  <button onclick="join('hokm')">♠️ حکم ۴ نفره</button>
+  <button onclick="join('monopoly')">🎲 منچ</button>
+  <button onclick="join('snake')">🐍 مار و پله</button>
+
+  <script>
+    Telegram.WebApp.ready();
+    document.getElementById('name').innerText = Telegram.WebApp.initDataUnsafe.user.first_name;
+
+    const socket = io();
+    function join(game) {
+      const room = prompt("کد اتاق بنویس (خالی بذار = اتاق جدید)");
+      socket.emit('join', { game, room, user: Telegram.WebApp.initDataUnsafe.user });
+      alert("در حال اتصال به " + (game==='hokm'?'حکم':game==='monopoly'?'منچ':'مارپله') + "...");
+    }
+
+    socket.on('joined', (data) => {
+      alert(`اتاق ${data.room} | بازیکنان: ${data.count}/4`);
+    });
+  </script>
+</body>
+</html>
